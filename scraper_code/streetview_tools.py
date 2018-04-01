@@ -34,6 +34,7 @@ import itertools
 from PIL import Image
 from io import BytesIO
 import os
+import pdb
 
 
 def _panoids_url(lat, lon):
@@ -51,10 +52,11 @@ def _panoids_data(lat, lon, proxies=None):
     closest panoramas (ids) to a give GPS coordinate.
     """
     url = _panoids_url(lat, lon)
+
     return requests.get(url, proxies=None)
 
 
-def panoids(lat, lon, closest=False, disp=False, proxies=None):
+def panoids(lat, lon, closest=True, disp=False, proxies=None):
     """
     Gets the closest panoramas (ids) to the GPS coordinates.
     If the 'closest' boolean parameter is set to true, only the closest panorama
@@ -74,7 +76,9 @@ def panoids(lat, lon, closest=False, disp=False, proxies=None):
     # 2012
     # 2013
     # 2014
+
     pans = re.findall('\[[0-9]+,"(.+?)"\].+?\[\[null,null,(-?[0-9]+.[0-9]+),(-?[0-9]+.[0-9]+)', resp.text)
+    #print pans
     pans = [{
         "panoid": p[0],
         "lat": float(p[1]),
@@ -101,7 +105,7 @@ def panoids(lat, lon, closest=False, disp=False, proxies=None):
         # Make sure the month value is between 1-12
         dates = [d for d in dates if d[1] <= 12 and d[1] >= 1]
 
-        # The last date belongs to the first panorama
+        # The last date belongs to thed first panorama
         year, month = dates.pop(-1)
         pans[0].update({'year': year, "month": month})
 
@@ -109,6 +113,9 @@ def panoids(lat, lon, closest=False, disp=False, proxies=None):
         dates.reverse()
         for i, (year, month) in enumerate(dates):
             pans[-1-i].update({'year': year, "month": month})
+
+    # if not(pans):
+    #     print 'Its empty!!'
 
     # # Make the first value of the dates the index
     # if len(dates) > 0 and dates[-1][0] == '':
@@ -131,6 +138,7 @@ def panoids(lat, lon, closest=False, disp=False, proxies=None):
         return [pans[i] for i in range(len(dates))]
     else:
         return pans
+
 
 
 def tiles_info(panoid):

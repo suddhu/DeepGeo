@@ -18,22 +18,22 @@ def pointInPolygon(x,y,points):
 	outPath = mplPath.Path(points)
 	return outPath.contains_point((x, y))
 
-def main():
+def get_points_in_states(states_file):
     
     #init
     borders = []
     labels = []
     points = []
-    nSamples = 1000
+    nSamples = 1
     
     # get state borders
     
-    tree = ET.parse('states.xml')
+    tree = ET.parse(states_file)
     root = tree.getroot()
     count = 0
     for child in root:
         labels.append(child.attrib['name'])
-        print child.attrib['name'],count
+        #print child.attrib['name'],count
         count+=1
         stateBorder = np.empty((0,2),dtype=np.float64)
         for point in child:
@@ -49,7 +49,7 @@ def main():
         
     # sample points
     for i in range(0,nLabels):
-        print i
+        #print i
         nValidPoints = 0
         
         xMin = min(map(float,borders[i][:,0]))
@@ -74,6 +74,8 @@ def main():
         points.append(np.concatenate((xSamples,ySamples),axis=1))
         
     # plot points
-    for i in range(0,nLabels):
-#        plt.plot(points[0][:,0], points[0][:,1], 'bo')
-        plt.plot(points[i][:,0], points[i][:,1], 'bo')
+    # for i in range(0,nLabels):
+    #    plt.plot(points[0][:,0], points[0][:,1], 'bo')
+    #     plt.plot(points[i][:,0], points[i][:,1], 'bo')
+
+    return points
