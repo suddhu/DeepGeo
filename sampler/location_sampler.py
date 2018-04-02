@@ -18,34 +18,50 @@ def pointInPolygon(x,y,points):
 	outPath = mplPath.Path(points)
 	return outPath.contains_point((x, y))
 
-def get_points_in_states(states_file):
-    
+
+def get_borders(states_file):
     #init
     borders = []
-    labels = []
-    points = []
-    nSamples = 1
-    
-    # get state borders
-    
+
+    # get state borders  
     tree = ET.parse(states_file)
     root = tree.getroot()
     count = 0
     for child in root:
-        labels.append(child.attrib['name'])
         #print child.attrib['name'],count
         count+=1
         stateBorder = np.empty((0,2),dtype=np.float64)
         for point in child:
             stateBorder = np.append(stateBorder,np.array([[point.attrib['lng'], point.attrib['lat']]]),axis=0)
         borders.append(stateBorder)
-     
+
+    return borders
+
+def get_labels(states_file):
+    #init
+    labels = []
+
+    # get state borders  
+    tree = ET.parse(states_file)
+    root = tree.getroot()
+    count = 0
+    for child in root:
+        labels.append(child.attrib['name'])
+        #print child.attrib['name'],count
+
+    return labels
+
+def get_points_in_states(borders):
+    
+    points = []
+    nSamples = 1
+    
     # no states
     nLabels = len(borders)
     
     # plot borders
-    for i in range(0,nLabels):
-        plt.plot(borders[i][:,0], borders[i][:,1], 'ro-')
+    # for i in range(0,nLabels):
+    #     plt.plot(borders[i][:,0], borders[i][:,1], 'ro-')
         
     # sample points
     for i in range(0,nLabels):

@@ -25,10 +25,10 @@ javascript, but the Python interface doesn't allow this. Utilizing the
 middleman of instantstreetview made things easier at the scale of my project,
 but this technique wouldn't work on a larger scale.
 '''
-
 gmaps_API = googlemaps.Client(key='***REMOVED***')
 geocoder_API = '***REMOVED***'
-streetview_API_key = '***REMOVED***'
+streetview_API_key = '***REMOVED***' #monty's wallet 
+# '***REMOVED***' suddhu's wallet 
 
 def save_image(coord, heading, pitch=5, fov=90, loc='../images/'):
     '''
@@ -89,33 +89,40 @@ def main():
     address of the location. Get the date the image was taken.
     Save everything to a .csv.
     '''
-    
 
     #[x,y,z] = np.shape(state_points)
     x = 50
-    y = 10
+    y = 2500
     heading = [0,90,180,270]
 
+    borders= location_sampler.get_borders(states_file)
+    labels= location_sampler.get_labels(states_file)
+
+    subset = [4,10,26,27,37]
     #coords = [-33.85693857571269,151.2144895142714]; 
-    for states in range(1,x):
-        dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(states) + '/'
+#    for states in range(1,x):
+    for states in subset: 
+        dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states]) + '/'
         if not os.path.exists(dir):
             os.makedirs(dir)
+        f = open( dir + "info.txt","w+")
+
+
         for vals in range(0,y):
             panoids = []
             while not(panoids):
-                state_points = location_sampler.get_points_in_states(states_file) # long, lat
+                state_points = location_sampler.get_points_in_states(borders) # long, lat
                 lat = state_points[states][0][1]
                 lng = state_points[states][0][0]
                 # lat=-33.85693857571269 lng=151.2144895142714
                 panoids = streetview_tools.panoids(lat=lat, lon=lng)
 
             for directions in heading:
-                streetview_tools.api_download(panoids[0]['panoid'], directions, dir, streetview_API_key, width=640, height=640,fov=90, pitch=0, extension='jpg', year=panoids[0]['year'])
-            
+                filename = streetview_tools.api_download(panoids[0]['panoid'], directions, dir, streetview_API_key, width=256, height=256,fov=90, pitch=0, extension='jpg', year=panoids[0]['year'])
+                f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
             print reverse_geocode([lat,lng])
             #print get_elev([lat,lng])
-
+        f.close()
 if __name__ == '__main__':
     main()
 
