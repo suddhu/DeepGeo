@@ -35,7 +35,7 @@ from PIL import Image
 from io import BytesIO
 import os
 import pdb
-
+from time import sleep 
 
 def _panoids_url(lat, lon):
     """
@@ -52,8 +52,14 @@ def _panoids_data(lat, lon, proxies=None):
     closest panoramas (ids) to a give GPS coordinate.
     """
     url = _panoids_url(lat, lon)
+    try:
+        return requests.get(url, proxies=None)
+    except requests.exceptions.ConnectionError:
+        print "Request Exception detected. Waiting."
+        sleep(10)
+        return requests.get(url, proxies=None)
 
-    return requests.get(url, proxies=None)
+    sleep(1)
 
 
 def panoids(lat, lon, closest=True, disp=False, proxies=None):
