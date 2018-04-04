@@ -59,7 +59,7 @@ def get_labels(states_file):
 
     return labels
 
-def get_points_in_states(borders):
+def get_points_in_states(borders,densityFlag,plotFlag):
     
     points = []
     nSamples = 1
@@ -68,11 +68,13 @@ def get_points_in_states(borders):
     nLabels = len(borders)
     
     # plot borders
-    # for i in range(0,nLabels):
-    #     plt.plot(borders[i][:,0], borders[i][:,1], 'ro-')
+    if plotFlag:
+        for i in range(0,nLabels):
+        plt.plot(borders[i][:,0], borders[i][:,1], 'ro-')
     
     # load population density
-#    density = genfromtxt('density2.5Min.txt', delimiter=',')
+    if densityFlag:
+        density = genfromtxt('density2.5Min.txt', delimiter=',')
 #    print density.shape
 
         
@@ -87,6 +89,7 @@ def get_points_in_states(borders):
         yMax = max(map(float,borders[i][:,1]))
         
         # load pop density for this rectangle
+        if densityFlag:
 #        #convert lng,lat to matrix coords
 #        #30Sec
 ##        colMin = round((xMin + 180)*120)
@@ -94,17 +97,18 @@ def get_points_in_states(borders):
 ##        rowMin = round((85 - yMin)*120)
 ##        rowMax = round((85 - yMax)*120)
 #        #2.5Min
-#        colMin = int(round((xMin + 180)*24))
-#        colMax = int(round((xMax + 180)*24))
-#        rowMin = int(round((85 - yMin)*24))
-#        rowMax = int(round((85 - yMax)*24))
-#        stateDensity = density[rowMax:rowMin,colMin:colMax]
-#        if (np.max(stateDensity) != 0):
-#            stateDensity = stateDensity/np.max(stateDensity)
-#        else:
-#            raise ValueError
-#        img = Image.fromarray(stateDensity*255)
-#        img.show()
+            colMin = int(round((xMin + 180)*24))
+            colMax = int(round((xMax + 180)*24))
+            rowMin = int(round((85 - yMin)*24))
+            rowMax = int(round((85 - yMax)*24))
+            stateDensity = density[rowMax:rowMin,colMin:colMax]
+            if (np.max(stateDensity) != 0):
+                stateDensity = stateDensity/np.max(stateDensity)
+            else:
+                raise ValueError
+                if plotFlag:
+                    img = Image.fromarray(stateDensity*255)
+                    img.show()
                 
         xSamples =  np.empty([0,1],dtype=np.float64)
         ySamples =  np.empty([0,1],dtype=np.float64)
@@ -112,21 +116,27 @@ def get_points_in_states(borders):
             x,y = genPoints(nSamples-nValidPoints,xMin,xMax,yMin,yMax)
             # generate points based on population density
 #            x,y = genPointsWeighted(nSamples-nValidPoints,xMin,xMax,yMin,yMax,stateDensity)
-            validPoints = np.full((nSamples-nValidPoints,), True, dtype=bool)
+            validPoints = np.full((nSamples-nValidPoints,), False, dtype=bool)
             for j in range(0,nSamples-nValidPoints):
-                if not pointInPolygon(x[j],y[j],borders[i]):
-                    validPoints[j] = False
+                #check if point in populated area
+                if densityFlag:
+                    xGrid = int(round((x[j] + 180)*24)) - colMin - 1
+                    yGrid = int(round((85 - y[j])*24)) - rowMax - 1
+                if pointInPolygon(x[j],y[j],borders[i]):
+#                    print xGrid,yGrid,colMin,colMax,rowMax,rowMin
+                    if densityFlag:
+                        if (stateDensity[yGrid,xGrid] > 1e-2):
+                            validPoints[j] = True
             x = x[validPoints]
             y = y[validPoints]
             xSamples = np.concatenate((xSamples,x),axis=0)
             ySamples = np.concatenate((ySamples,y),axis=0)
-            nValidPoints = len(xSamples)
-        #store
+            nValidPoints = len(xSamples)        #store
         points.append(np.concatenate((xSamples,ySamples),axis=1))
         
     # plot points
-    # for i in range(0,nLabels):
-    #    plt.plot(points[0][:,0], points[0][:,1], 'bo')
-    #     plt.plot(points[i][:,0], points[i][:,1], 'bo')
+    if plotFlag:
+        for i in range(0,nLabels):
+            plt.plot(points[i][:,0], points[i][:,1], 'b.')
 
     return points
