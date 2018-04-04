@@ -2,5 +2,4 @@ images/
 *.pyc 
 sampler/density2.5Min.txt
 sampler/density30Sec.txt
-sampler/density2.5MinCutoff.txt
 sampler/density30SecCutoff.txt

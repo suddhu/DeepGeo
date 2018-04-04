@@ -74,7 +74,7 @@ def get_points_in_states(borders,densityFlag,plotFlag):
     
     # load population density
     if densityFlag:
-        density = genfromtxt('density2.5Min.txt', delimiter=',')
+        density = genfromtxt('density2.5MinCutoff.txt', delimiter=',')
 #    print density.shape
 
         
