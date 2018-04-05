@@ -84,7 +84,12 @@ def get_elev(coord):
 
 def main():
     #[x,y,z] = np.shape(state_points)
-    x = 50
+    # Alaska - 0, Wyoming - 49
+    start = int(sys.argv[1])
+    finish = int(sys.argv[2])
+
+    print "State " + str(start) + " to " + str(finish)
+    #x = 50
     y = 2500
     heading = [0,90,180,270]
 
@@ -98,14 +103,15 @@ def main():
 
     #coords = [-33.85693857571269,151.2144895142714]; 
 #    for states in range(1,x):
-    for states in range(1,x): 
+    for states in range(start,finish): 
         dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states]) + '/'
         if not os.path.exists(dir):
             os.makedirs(dir)
         f = open( dir + "info.txt","a")
 
         # number of images already in the path 
-        images_needed = y - (len([name for name in os.listdir(dir) if os.path.isfile(os.path.join(dir, name))]) - 1)/4
+        images_in_folder = (len([name for name in os.listdir(dir) if os.path.isfile(os.path.join(dir, name))]) - 1)/4
+        images_needed = y - images_in_folder
 
         print  str(labels[states]) + " needs " + str(images_needed) + " more images!"
 
@@ -123,7 +129,7 @@ def main():
                 panoids = streetview_tools.panoids(lat=lat, lon=lng)
                 sys.stdout.write('.')
 
-            print  str(labels[states])  + " " + str(vals)
+            print  str(labels[states])  + " " + str(vals + images_in_folder)
 
             for directions in heading:
 
