@@ -15,6 +15,7 @@ sys.path.append('../sampler')
 import location_sampler
 
 states_file = '../sampler/states.xml'
+density_file = '../sampler/density2.5MinCutoff.txt'
 '''
 This scraper utilizes the website instantstreetview.com to find
 valid latitude/longitude coordinates for which there is streetview_tools data.
@@ -90,12 +91,13 @@ def main():
     borders= location_sampler.get_borders(states_file)
     labels= location_sampler.get_labels(states_file)
 
+    density = location_sampler.load_density(density_file)
+
     # subset = [4,10,26,27,37]
     # y = [2500, 1337, 2500, 2500,2500]
 
     #coords = [-33.85693857571269,151.2144895142714]; 
 #    for states in range(1,x):
-    state_no = 0 
     for states in range(1,x): 
         dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states]) + '/'
         if not os.path.exists(dir):
@@ -114,10 +116,10 @@ def main():
             panoids = []
             
             while not(panoids):
-                state_points = location_sampler.get_points_in_states(borders) # long, lat
+                state_points = location_sampler.get_points_in_states(borders,1,density, 0) # long, lat
                 lat = state_points[states][0][1]
                 lng = state_points[states][0][0]
-                # lat=-33.85693857571269 lng=151.2144895142714
+                # lat=-33.856f93857571269 lng=151.2144895142714
                 panoids = streetview_tools.panoids(lat=lat, lon=lng)
                 sys.stdout.write('.')
 
@@ -133,9 +135,6 @@ def main():
                     f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
                 except cv2.error:
                     print "OpenCV error: moving along..."
-
-        state_no+=1
-
         f.close()
 if __name__ == '__main__':
     main()
