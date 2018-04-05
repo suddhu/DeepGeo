@@ -4,7 +4,7 @@ import googlemaps
 import urllib
 import numpy as np
 import pdb
-import os
+import os, os.path
 import cv2
 import numpy as np
 
@@ -84,6 +84,7 @@ def get_elev(coord):
 def main():
     #[x,y,z] = np.shape(state_points)
     x = 50
+    y = 2500
     heading = [0,90,180,270]
 
     borders= location_sampler.get_borders(states_file)
@@ -92,19 +93,24 @@ def main():
     # subset = [4,10,26,27,37]
     # y = [2500, 1337, 2500, 2500,2500]
 
-    subset = [26,27,37]
-    y = [2500, 2500,2500]
     #coords = [-33.85693857571269,151.2144895142714]; 
 #    for states in range(1,x):
     state_no = 0 
-    for states in subset: 
+    for states in range(1,x): 
         dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states]) + '/'
         if not os.path.exists(dir):
             os.makedirs(dir)
         f = open( dir + "info.txt","a")
 
+        # number of images already in the path 
+        images_needed = y - (len([name for name in os.listdir(dir) if os.path.isfile(os.path.join(dir, name))]) - 1)/4
 
-        for vals in range(0,y[state_no]):
+        print  str(labels[states]) + " needs " + str(images_needed) + " more images!"
+
+        if images_needed < 0:
+            continue    # more than 10K, moving on...
+
+        for vals in range(0,images_needed):
             panoids = []
             
             while not(panoids):
@@ -115,19 +121,21 @@ def main():
                 panoids = streetview_tools.panoids(lat=lat, lon=lng)
                 sys.stdout.write('.')
 
-            print vals
+            print  str(labels[states])  + " " + str(vals)
 
             for directions in heading:
 
                 filename = streetview_tools.api_download(panoids[0]['panoid'], directions, dir, streetview_API_key, width=256, height=256,fov=90, pitch=0, extension='jpg', year=panoids[0]['year'])
-                A = cv2.imread(filename,1)
-                cv2.imshow(str(labels[states]) + " - " + str(vals),A)
-                cv2.waitKey(1)
-                f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
+                try:
+                    A = cv2.imread(filename,1)
+                    cv2.imshow('current image',A)
+                    cv2.waitKey(1)
+                    f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
+                except cv2.error:
+                    print "OpenCV error: moving along..."
 
         state_no+=1
-            #print reverse_geocode([lat,lng])
-            #print get_elev([lat,lng])
+
         f.close()
 if __name__ == '__main__':
     main()
