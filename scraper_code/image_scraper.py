@@ -7,7 +7,7 @@ import pdb
 import os, os.path
 import cv2
 import numpy as np
-
+from matplotlib import pyplot as plt
 import streetview_tools
 
 import sys  
@@ -98,10 +98,17 @@ def main():
 
     density = location_sampler.load_density(density_file)
 
+    #location_sampler.plot_map(borders)
+    nLabels = len(borders)
+
+    # generate border map of USA
+    for i in range(0,nLabels):
+        plt.plot(borders[i][:,0], borders[i][:,1], 'r-')
+    plt.show(0)
+    plt.hold(True)
     # subset = [4,10,26,27,37]
     # y = [2500, 1337, 2500, 2500,2500]
 
-    #coords = [-33.85693857571269,151.2144895142714]; 
 #    for states in range(1,x):
     for states in range(start,finish): 
         dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states]) + '/'
@@ -122,7 +129,7 @@ def main():
             panoids = []
             
             while not(panoids):
-                state_points = location_sampler.get_points_in_states(borders,1,density, 0) # long, lat
+                state_points = location_sampler.get_points_in_states(borders,1,density) # long, lat
                 lat = state_points[states][0][1]
                 lng = state_points[states][0][0]
                 # lat=-33.856f93857571269 lng=151.2144895142714
@@ -130,6 +137,10 @@ def main():
                 sys.stdout.write('.')
 
             print  str(labels[states])  + " " + str(vals + images_in_folder)
+
+            # plot lat,lng on map
+            plt.plot(lng, lat, 'b.', markersize=2)
+            plt.pause(0.05)
 
             for directions in heading:
 

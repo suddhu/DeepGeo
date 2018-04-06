@@ -5,6 +5,7 @@ import pdb
 from PIL import Image
 from numpy import genfromtxt
 from matplotlib import pyplot as plt
+from matplotlib.pyplot import draw
 from matplotlib import figure as fig
 import xml.etree.ElementTree as ET
 import matplotlib
@@ -59,7 +60,13 @@ def get_labels(states_file):
 
     return labels
 
-def get_points_in_states(borders,densityFlag,plotFlag):
+def load_density(density_file):
+    density = genfromtxt(density_file, delimiter=',')
+    print "loaded density file"
+    return density
+
+
+def get_points_in_states(borders,densityFlag,density):
     
     points = []
     nSamples = 1
@@ -67,17 +74,6 @@ def get_points_in_states(borders,densityFlag,plotFlag):
     # no states
     nLabels = len(borders)
     
-    # plot borders
-    if plotFlag:
-        for i in range(0,nLabels):
-        plt.plot(borders[i][:,0], borders[i][:,1], 'ro-')
-    
-    # load population density
-    if densityFlag:
-        density = genfromtxt('density2.5MinCutoff.txt', delimiter=',')
-#    print density.shape
-
-        
     # sample points
     for i in range(0,nLabels):
         #print i
@@ -90,13 +86,6 @@ def get_points_in_states(borders,densityFlag,plotFlag):
         
         # load pop density for this rectangle
         if densityFlag:
-#        #convert lng,lat to matrix coords
-#        #30Sec
-##        colMin = round((xMin + 180)*120)
-##        colMax = round((xMax + 180)*120)
-##        rowMin = round((85 - yMin)*120)
-##        rowMax = round((85 - yMax)*120)
-#        #2.5Min
             colMin = int(round((xMin + 180)*24))
             colMax = int(round((xMax + 180)*24))
             rowMin = int(round((85 - yMin)*24))
@@ -106,9 +95,6 @@ def get_points_in_states(borders,densityFlag,plotFlag):
                 stateDensity = stateDensity/np.max(stateDensity)
             else:
                 raise ValueError
-                if plotFlag:
-                    img = Image.fromarray(stateDensity*255)
-                    img.show()
                 
         xSamples =  np.empty([0,1],dtype=np.float64)
         ySamples =  np.empty([0,1],dtype=np.float64)
@@ -134,9 +120,4 @@ def get_points_in_states(borders,densityFlag,plotFlag):
             nValidPoints = len(xSamples)        #store
         points.append(np.concatenate((xSamples,ySamples),axis=1))
         
-    # plot points
-    if plotFlag:
-        for i in range(0,nLabels):
-            plt.plot(points[i][:,0], points[i][:,1], 'b.')
-
     return points
