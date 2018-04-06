@@ -16,6 +16,7 @@ import location_sampler
 
 states_file = '../sampler/states.xml'
 density_file = '../sampler/density2.5MinCutoff.txt'
+fail_image = cv2.imread('../fail.jpg',1)
 '''
 This scraper utilizes the website instantstreetview.com to find
 valid latitude/longitude coordinates for which there is streetview_tools data.
@@ -147,6 +148,16 @@ def main():
                 filename = streetview_tools.api_download(panoids[0]['panoid'], directions, dir, streetview_API_key, width=256, height=256,fov=90, pitch=0, extension='jpg', year=panoids[0]['year'])
                 try:
                     A = cv2.imread(filename,1)
+                    difference = cv2.subtract(A, fail_image)
+                    result = not np.any(difference)
+
+                    if result is True:
+                        print "Street View limit has been reached!"
+                        # Todo - delete image 
+                        os.remove(filename)
+                        f.close()
+                        sys.exit()
+
                     cv2.imshow('current image',A)
                     cv2.waitKey(1)
                     f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
