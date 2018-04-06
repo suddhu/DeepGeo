@@ -17,54 +17,13 @@ import location_sampler
 states_file = '../sampler/states.xml'
 density_file = '../sampler/density2.5MinCutoff.txt'
 fail_image = cv2.imread('../fail.jpg',1)
-'''
-This scraper utilizes the website instantstreetview.com to find
-valid latitude/longitude coordinates for which there is streetview_tools data.
-I played around with querying the streetview_tools API with locations from
-road shapefiles in Colorado, but the miss rate was simply too high: it wasn't
-worth having 50% of the downloaded images be images that said "Sorry, we have
-no imagery here." It's possible to query the streetview_tools API directly in
-javascript, but the Python interface doesn't allow this. Utilizing the
-middleman of instantstreetview made things easier at the scale of my project,
-but this technique wouldn't work on a larger scale.
-'''
+
 
 #gmaps_API = googlemaps.Client(key='***REMOVED***')
 #geocoder_API = '***REMOVED***'
 streetview_API_key = '***REMOVED***'
 #'***REMOVED***' #monty's wallet 
 # '***REMOVED***' suddhu's wallet 
-
-def save_image(coord, heading, pitch=5, fov=90, loc='../images/'):
-    '''
-    INPUT:  (1) tuple: latitude and longitude coordinates, in degrees
-            (2) integer: 0, 360 = N, 90= E, 180 = S, 270 = W
-            (3) integer: -90 < pitch < 90 (degrees). 5 is a good middleground
-            (4) integer: 20 < fov < 120. 90 is a natural middleground.
-            (5) string: folder name to save images to
-    OUTPUT: None
-
-    This function will save google street view images facing N, E, S, and W
-    for a given coordinate pair to 'loc'
-    '''
-    if heading == 0 or heading == 360:
-        sufx = 'N'
-    elif heading == 90:
-        sufx = 'E'
-    elif heading == 180:
-        sufx = 'S'
-    elif heading == 270:
-        sufx = 'W'
-    web_address = ('''https://maps.googleapis.com/maps/api/
-                   streetview_tools?size=640x400&location={},{}
-                   &fov={}&heading={}&pitch={}&key={}'''.format(
-                   coord[0], coord[1], fov,
-                   heading, pitch, streetview_API_key))
-
-    filename = ('''{}/lat_{},long_{}_.png'''.format(
-                loc, str(coord[0])[:8], sufx,))
-    urllib.urlretrieve(web_address, filename=filename)
-
 
 def reverse_geocode(coord):
     '''
