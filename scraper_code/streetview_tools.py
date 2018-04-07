@@ -35,7 +35,7 @@ from PIL import Image
 from io import BytesIO
 import os
 import pdb
-
+from time import sleep 
 
 def _panoids_url(lat, lon):
     """
@@ -52,8 +52,14 @@ def _panoids_data(lat, lon, proxies=None):
     closest panoramas (ids) to a give GPS coordinate.
     """
     url = _panoids_url(lat, lon)
+    try:
+        return requests.get(url, proxies=None)
+    except requests.exceptions.ConnectionError:
+        print "Request Exception detected. Waiting."
+        sleep(10)
+        return requests.get(url, proxies=None)
 
-    return requests.get(url, proxies=None)
+    sleep(1)
 
 
 def panoids(lat, lon, closest=True, disp=False, proxies=None):
@@ -217,7 +223,7 @@ def delete_tiles(tiles, directory):
         os.remove(directory + "/" + fname)
 
 
-def api_download(panoid, heading, flat_dir, key, width=640, height=640,
+def api_download(panoid, heading, flat_dir, key, width=228, height=228,
                  fov=120, pitch=0, extension='jpg', year=2017):
     """
     Download an image using the official API. These are not panoramas.
@@ -238,6 +244,7 @@ def api_download(panoid, heading, flat_dir, key, width=640, height=640,
     You can find instructions to obtain an API key here: https://developers.google.com/maps/documentation/streetview/
     """
 
+    #fname = "%s_%s_%s" % (year, panoid, str(heading))
     fname = "%s_%s_%s" % (year, panoid, str(heading))
     image_format = extension if extension != 'jpg' else 'jpeg'
 

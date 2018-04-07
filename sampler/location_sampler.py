@@ -2,7 +2,10 @@ import numpy as np
 import sys
 import pdb
 
+from PIL import Image
+from numpy import genfromtxt
 from matplotlib import pyplot as plt
+from matplotlib.pyplot import draw
 from matplotlib import figure as fig
 import xml.etree.ElementTree as ET
 import matplotlib
@@ -13,40 +16,64 @@ def genPoints(nPoints,xMin,xMax,yMin,yMax):
     y = np.random.uniform(yMin,yMax,(nPoints,1))
     return (x,y)
 
+def genPointsWeighted(nPoints,xMin,xMax,yMin,yMax,stateDensity):
+    x = np.random.uniform(xMin,xMax,(nPoints,1))
+    y = np.random.uniform(yMin,yMax,(nPoints,1))
+    return (x,y)
+
+
 def pointInPolygon(x,y,points):
 	"Determines if pt inside polygon"
 	outPath = mplPath.Path(points)
 	return outPath.contains_point((x, y))
 
-def get_points_in_states(states_file):
-    
+
+def get_borders(states_file):
     #init
     borders = []
-    labels = []
-    points = []
-    nSamples = 1
-    
-    # get state borders
-    
+
+    # get state borders  
     tree = ET.parse(states_file)
     root = tree.getroot()
     count = 0
     for child in root:
-        labels.append(child.attrib['name'])
         #print child.attrib['name'],count
         count+=1
         stateBorder = np.empty((0,2),dtype=np.float64)
         for point in child:
             stateBorder = np.append(stateBorder,np.array([[point.attrib['lng'], point.attrib['lat']]]),axis=0)
         borders.append(stateBorder)
-     
+
+    return borders
+
+def get_labels(states_file):
+    #init
+    labels = []
+
+    # get state borders  
+    tree = ET.parse(states_file)
+    root = tree.getroot()
+    count = 0
+    for child in root:
+        labels.append(child.attrib['name'])
+        #print child.attrib['name'],count
+
+    return labels
+
+def load_density(density_file):
+    density = genfromtxt(density_file, delimiter=',')
+    print "loaded density file"
+    return density
+
+
+def get_points_in_states(borders,densityFlag,density):
+    
+    points = []
+    nSamples = 1
+    
     # no states
     nLabels = len(borders)
     
-    # plot borders
-    for i in range(0,nLabels):
-        plt.plot(borders[i][:,0], borders[i][:,1], 'ro-')
-        
     # sample points
     for i in range(0,nLabels):
         #print i
@@ -56,26 +83,41 @@ def get_points_in_states(states_file):
         xMax = max(map(float,borders[i][:,0]))
         yMin = min(map(float,borders[i][:,1]))
         yMax = max(map(float,borders[i][:,1]))
+        
+        # load pop density for this rectangle
+        if densityFlag:
+            colMin = int(round((xMin + 180)*24))
+            colMax = int(round((xMax + 180)*24))
+            rowMin = int(round((85 - yMin)*24))
+            rowMax = int(round((85 - yMax)*24))
+            stateDensity = density[rowMax:rowMin,colMin:colMax]
+            if (np.max(stateDensity) != 0):
+                stateDensity = stateDensity/np.max(stateDensity)
+            else:
+                raise ValueError
                 
         xSamples =  np.empty([0,1],dtype=np.float64)
         ySamples =  np.empty([0,1],dtype=np.float64)
         while (nValidPoints < nSamples):
             x,y = genPoints(nSamples-nValidPoints,xMin,xMax,yMin,yMax)
-            validPoints = np.full((nSamples-nValidPoints,), True, dtype=bool)
+            # generate points based on population density
+#            x,y = genPointsWeighted(nSamples-nValidPoints,xMin,xMax,yMin,yMax,stateDensity)
+            validPoints = np.full((nSamples-nValidPoints,), False, dtype=bool)
             for j in range(0,nSamples-nValidPoints):
-                if not pointInPolygon(x[j],y[j],borders[i]):
-                    validPoints[j] = False
+                #check if point in populated area
+                if densityFlag:
+                    xGrid = int(round((x[j] + 180)*24)) - colMin - 1
+                    yGrid = int(round((85 - y[j])*24)) - rowMax - 1
+                if pointInPolygon(x[j],y[j],borders[i]):
+#                    print xGrid,yGrid,colMin,colMax,rowMax,rowMin
+                    if densityFlag:
+                        if (stateDensity[yGrid,xGrid] > 1e-2):
+                            validPoints[j] = True
             x = x[validPoints]
             y = y[validPoints]
             xSamples = np.concatenate((xSamples,x),axis=0)
             ySamples = np.concatenate((ySamples,y),axis=0)
-            nValidPoints = len(xSamples)
-        #store
+            nValidPoints = len(xSamples)        #store
         points.append(np.concatenate((xSamples,ySamples),axis=1))
         
-    # plot points
-    # for i in range(0,nLabels):
-    #    plt.plot(points[0][:,0], points[0][:,1], 'bo')
-    #     plt.plot(points[i][:,0], points[i][:,1], 'bo')
-
     return points
