@@ -1,2 +1,5 @@
-images/
-*.pyc 
+*
+!*.py
+!*.xml
+!*.md
+!*/
