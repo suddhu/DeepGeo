@@ -3,7 +3,7 @@
 Image Geolocation via Deep Neural Network. 10-701 Course Project. 
 
 
-##Setup 
+## Setup 
 
 Install the Google Maps package for python 
 
