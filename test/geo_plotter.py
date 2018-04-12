@@ -30,13 +30,16 @@ for i in range(0,nLabels):
 plt.show(0)
 plt.hold(True)
 
-for states in range(1,49):
+for states in range(1,3):
+	print labels[states]
 	fname = "../images/" + labels[states] + "/info.txt"
 
 	with open(fname) as f:
 	    content = f.readlines()
 	f.close()
 	content = [x.strip() for x in content] 
+
+	points = np.zeros((len(content), 2))
 
 	for j in range(0,len(content)):
 		matches = re.finditer(" [+-]?([0-9]*[.])?[0-9]+", content[j])
@@ -45,12 +48,15 @@ for states in range(1,49):
 		pos = [0,0]
 		for matchNum, match in enumerate(matches):
 			matchNum = matchNum + 1
-			pos[count] = match.group()
+			pos[count] = float(match.group())
 			count +=1
 
-		print labels[states] + "  -  " + str((float(j)/len(content))*100) + "%"
-		# plot lat,lng on map
-		plt.plot(pos[1], pos[0], 'b.', markersize=2)
-		plt.pause(0.05)
+		points[j][0] = pos[0]
+		points[j][1] = pos[1]
+
+		#print content[0]
+	# plot lat,lng on map
+	plt.plot(points[:,1], points[:,0], 'b.', markersize=2)
+	plt.pause(0.05)
 
 pdb.set_trace()

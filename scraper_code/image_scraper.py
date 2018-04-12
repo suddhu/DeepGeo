@@ -76,6 +76,7 @@ def main():
 
 #    for states in range(1,x):
     for states in range(start,finish): 
+
         dir = images_dir + str(labels[states]) + '/'
         if not os.path.exists(dir):
             os.makedirs(dir)
