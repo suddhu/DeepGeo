@@ -17,6 +17,8 @@ import location_sampler
 states_file = '../sampler/states.xml'
 density_file = '../sampler/density2.5MinCutoff.txt'
 fail_image = cv2.imread('../fail.jpg',1)
+fail_image2 = cv2.imread('../fail2.jpg',1)
+
 
 images_dir = '/home/suddhu/Pictures/deepgeo/images/'	#X1
 #images_dir = '/home/suddhu/Documents/courses/10701/project/images/'	#P51
@@ -114,10 +116,19 @@ def main():
                 try:
                     A = cv2.imread(filename,1)
                     difference = cv2.subtract(A, fail_image)
-                    result = not np.any(difference)
+                    result1 = not np.any(difference)
 
-                    if result is True:
+                    difference = cv2.subtract(A, fail_image2)
+                    result2 = not np.any(difference)
+
+                    if result1 is True:
                         print "Street View limit has been reached!"
+                        # Todo - delete image 
+                        os.remove(filename)
+                        f.close()
+                        sys.exit()
+                    elif result2 is True:
+                    	print "Street View Signature Error!"
                         # Todo - delete image 
                         os.remove(filename)
                         f.close()
