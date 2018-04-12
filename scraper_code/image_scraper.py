@@ -71,7 +71,7 @@ def main():
 
 #    for states in range(1,x):
     for states in range(start,finish): 
-        dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states]) + '/'
+        dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states])
         if not os.path.exists(dir):
             os.makedirs(dir)
         f = open( dir + "info.txt","a")
