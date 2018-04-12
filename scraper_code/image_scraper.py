@@ -26,6 +26,7 @@ images_dir = '/home/suddhu/Pictures/deepgeo/images/'	#X1
 #geocoder_API = '***REMOVED***'
 streetview_API_key = '***REMOVED***' # X1 carbon suddhus@gmail.com
 #streetview_API_key = '***REMOVED***' # P51 sudhars1?
+streetview_API_key = '***REMOVED***' #sudharshan.nitt
 #'***REMOVED***' #monty's wallet 
 # '***REMOVED***' suddhu's wallet 
 
