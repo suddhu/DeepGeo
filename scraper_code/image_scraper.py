@@ -18,10 +18,14 @@ states_file = '../sampler/states.xml'
 density_file = '../sampler/density2.5MinCutoff.txt'
 fail_image = cv2.imread('../fail.jpg',1)
 
+images_dir = '/home/suddhu/Pictures/deepgeo/images/'	#X1
+#images_dir = '/home/suddhu/Documents/courses/10701/project/images/'	#P51
+
 
 #gmaps_API = googlemaps.Client(key='***REMOVED***')
 #geocoder_API = '***REMOVED***'
-streetview_API_key = '***REMOVED***'
+streetview_API_key = '***REMOVED***' # X1 carbon suddhus@gmail.com
+#streetview_API_key = '***REMOVED***' # P51 sudhars1?
 #'***REMOVED***' #monty's wallet 
 # '***REMOVED***' suddhu's wallet 
 
@@ -71,7 +75,8 @@ def main():
 
 #    for states in range(1,x):
     for states in range(start,finish): 
-        dir = '/home/suddhu/Documents/courses/10701/project/images/' + str(labels[states])
+
+        dir = images_dir + str(labels[states]) + '/'
         if not os.path.exists(dir):
             os.makedirs(dir)
         f = open( dir + "info.txt","a")
