@@ -99,8 +99,6 @@ def bottleneck(x, n, stride, is_training, name='bottleneck',
     in_channel = x.get_shape().as_list()[-1]
     inner_channel = n // 4
     with tf.variable_scope(name) as scope:
-        if load_prefix:
-            load_prefix = (load_prefix+'_'+name)
         cut = shortcut(x, in_channel, n, stride, is_training,
                        use_bias = use_bias,
                        use_batchnorm = use_batchnorm)

@@ -62,7 +62,7 @@ def _lighting_noise(img, alphastd):
     return img + imgnoise
 
 
-def streetview_dataset(files, labels, batch_size, augment = True):
+def streetview_dataset(files, labels, batch_size, augment = True, shuffle = True):
     def augment_image(img):
         flip = tf.greater(tf.random_uniform((), 0, 1), 0.5)
 
@@ -75,5 +75,7 @@ def streetview_dataset(files, labels, batch_size, augment = True):
     daug = d.map(normalize_image).map(augment_image)
     d = tf.data.Dataset.zip((d, daug if augment else d.map(normalize_image),
                              tf.data.Dataset.from_tensor_slices(labels)))
-    d = d.shuffle(2000).batch(batch_size)
+    if shuffle:
+        d = d.shuffle(4000)
+    d = d.batch(batch_size)
     return d
