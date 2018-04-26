@@ -60,7 +60,6 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 	output_labels = np.argsort(output,axis =1)[:,-5:]
 	acc = 0
 
-	print(label_names)
 	for i in range(0,output_labels.shape[0]):
 		# plot the image first 
 		im_path = test_image_path + '/' + label_names[test_labels[i]] + '/' + test_images[i].rsplit('/', 1)[-1]
@@ -75,13 +74,22 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 		for k in range(0,nLabels):
 			plt.plot(borders[k][:,0], borders[k][:,1], 'r-')
 			plt.hold(True)
-			plt.plot(borders[test_labels[i]][:,0], borders[test_labels[i]][:,1], 'c-',linewidth=5.0)
+
+			# due to mismatch im plotting the wrong state! 
+			idx = labels.index(label_names[test_labels[i]])
+			idx1 = labels.index(label_names[int(output_labels[i,0])])
+			idx2 = labels.index(label_names[int(output_labels[i,1])])
+			idx3 = labels.index(label_names[int(output_labels[i,2])])
+			idx4 = labels.index(label_names[int(output_labels[i,3])])
+			idx5 = labels.index(label_names[int(output_labels[i,4])])
+
+			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=5.0)
 			
-			plt.fill(borders[int(output_labels[i,0])][:,0], borders[int(output_labels[i,0])][:,1], 'g-')
-			plt.fill(borders[int(output_labels[i,1])][:,0], borders[int(output_labels[i,1])][:,1], 'y-')
-			plt.fill(borders[int(output_labels[i,2])][:,0], borders[int(output_labels[i,2])][:,1], 'm-')
-			plt.fill(borders[int(output_labels[i,3])][:,0], borders[int(output_labels[i,3])][:,1], 'r-')
-			plt.fill(borders[int(output_labels[i,4])][:,0], borders[int(output_labels[i,4])][:,1], 'k-')
+			plt.fill(borders[idx1][:,0], borders[idx1][:,1], 'g-')
+			plt.fill(borders[idx2][:,0], borders[idx2][:,1], 'y-')
+			plt.fill(borders[idx3][:,0], borders[idx3][:,1], 'm-')
+			plt.fill(borders[idx4][:,0], borders[idx4][:,1], 'r-')
+			plt.fill(borders[idx5][:,0], borders[idx5][:,1], 'k-')
 		plt.show(0)
 		input("Press Enter to continue...")
 		plt.hold(False)
