@@ -2,14 +2,15 @@ import numpy as np
 import pdb
 from geopy.distance import great_circle
 
-# def get_accuracy(test_labels,output_labels):
-#     acc = [ 0 for _ in range(nLabels) ]
-#     for l in range(nLabels):
-#         nCorrect = sum([ l == p for (p, t) in zip(pred, labels) if t == l ])
-#         n = sum([ l == t for t in labels ])
-#         acc[l] = float(nCorrect)/n
-#     return acc
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import sys
 
+sys.path.append('../sampler')  
+import location_sampler
+
+
+# TODO: label_names order different from the actual 0-49 order!! REDO stuff. 
 
 def get_accuracy(test_labels,output,state_centers,N):
 	output_labels = np.argsort(output,axis =1)[:,-N:]
@@ -47,3 +48,41 @@ def get_accuracy(test_labels,output,state_centers,N):
 
 # def get_top_3_accuracy(test_labels,output_labels):
 # def get_distinctness_score():
+
+
+def show_image_and_map(test_labels,label_names,test_images,output,test_image_path):
+	states_file = '../sampler/states.xml'
+	borders= location_sampler.get_borders(states_file)
+	labels= location_sampler.get_labels(states_file)
+	#location_sampler.plot_map(borders)
+	nLabels = len(borders)
+
+	output_labels = np.argsort(output,axis =1)[:,-5:]
+	acc = 0
+
+	print(label_names)
+	for i in range(0,output_labels.shape[0]):
+		# plot the image first 
+		im_path = test_image_path + '/' + label_names[test_labels[i]] + '/' + test_images[i].rsplit('/', 1)[-1]
+		print(im_path)
+		img = mpimg.imread(im_path)
+		plt.figure(0)
+		imgplot = plt.imshow(img)
+		# plt.show()
+
+		plt.figure(1)
+		# generate border map of USA
+		for k in range(0,nLabels):
+			plt.plot(borders[k][:,0], borders[k][:,1], 'r-')
+			plt.hold(True)
+			plt.plot(borders[test_labels[i]][:,0], borders[test_labels[i]][:,1], 'c-',linewidth=5.0)
+			
+			plt.fill(borders[int(output_labels[i,0])][:,0], borders[int(output_labels[i,0])][:,1], 'g-')
+			plt.fill(borders[int(output_labels[i,1])][:,0], borders[int(output_labels[i,1])][:,1], 'y-')
+			plt.fill(borders[int(output_labels[i,2])][:,0], borders[int(output_labels[i,2])][:,1], 'm-')
+			plt.fill(borders[int(output_labels[i,3])][:,0], borders[int(output_labels[i,3])][:,1], 'r-')
+			plt.fill(borders[int(output_labels[i,4])][:,0], borders[int(output_labels[i,4])][:,1], 'k-')
+		plt.show(0)
+		input("Press Enter to continue...")
+		plt.hold(False)
+

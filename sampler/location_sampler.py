@@ -61,7 +61,7 @@ def get_labels(states_file):
 
 def load_density(density_file):
     density = genfromtxt(density_file, delimiter=',')
-    print "loaded density file"
+    print("loaded density file")
     return density
 
 
