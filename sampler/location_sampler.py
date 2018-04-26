@@ -21,7 +21,6 @@ def genPointsWeighted(nPoints,xMin,xMax,yMin,yMax,stateDensity):
     y = np.random.uniform(yMin,yMax,(nPoints,1))
     return (x,y)
 
-
 def pointInPolygon(x,y,points):
 	"Determines if pt inside polygon"
 	outPath = mplPath.Path(points)
