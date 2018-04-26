@@ -2,8 +2,12 @@ import numpy as np
 import pdb
 from geopy.distance import great_circle
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import matplotlib.patches as mpatches
+from matplotlib.ticker import FuncFormatter
+
 import sys
 
 sys.path.append('../sampler')  
@@ -75,7 +79,7 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 			plt.plot(borders[k][:,0], borders[k][:,1], 'r-')
 			plt.hold(True)
 
-			# due to mismatch im plotting the wrong state! 
+			# plot for states
 			idx = labels.index(label_names[test_labels[i]])
 			idx1 = labels.index(label_names[int(output_labels[i,0])])
 			idx2 = labels.index(label_names[int(output_labels[i,1])])
@@ -84,13 +88,54 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 			idx5 = labels.index(label_names[int(output_labels[i,4])])
 
 			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=5.0)
-			
-			plt.fill(borders[idx1][:,0], borders[idx1][:,1], 'g-')
-			plt.fill(borders[idx2][:,0], borders[idx2][:,1], 'y-')
-			plt.fill(borders[idx3][:,0], borders[idx3][:,1], 'm-')
-			plt.fill(borders[idx4][:,0], borders[idx4][:,1], 'r-')
-			plt.fill(borders[idx5][:,0], borders[idx5][:,1], 'k-')
+			plt.fill(borders[idx1][:,0], borders[idx1][:,1], color='#66ff33')
+			plt.fill(borders[idx2][:,0], borders[idx2][:,1], color='#ffff00')
+			plt.fill(borders[idx3][:,0], borders[idx3][:,1], color='#ff9900')
+			plt.fill(borders[idx4][:,0], borders[idx4][:,1], color='#cc3300')
+			plt.fill(borders[idx5][:,0], borders[idx5][:,1], color='#4d1300')
+
+			# draw legend
+			colors = ['#66ff33','#ffff00','#ff9900','#cc3300','#4d1300','#00ffff']
+			LABELS = ['#1 prediction','#2 prediction','#3 prediction','#4 prediction','#5 prediction','Ground Truth']
+			patches = [
+			    mpatches.Patch(color=color, label=label)
+			    for label, color in zip(LABELS, colors)]
+			plt.legend(patches, LABELS, loc=1, frameon=False)
+
 		plt.show(0)
 		input("Press Enter to continue...")
 		plt.hold(False)
 
+def plot_graphs(acc_array):
+	x = [1, 2, 3, 4]
+	my_xticks = ['Top-1','Top-2','Top-3','Top-5']
+	plt.xticks(x, my_xticks)
+
+	plt.plot(x, acc_array, 'r-',label='Single Image')
+	plt.yticks(np.arange(0, 1, 0.1))
+
+	# Create the formatter using the function to_percent. This multiplies all the
+	# default labels by 100, making them all percentages
+	formatter = FuncFormatter(to_percent)
+
+	# Set the formatter
+	plt.gca().yaxis.set_major_formatter(formatter)
+
+	plt.axis([0, 5, 0, 1])
+
+	plt.hold(True)
+	plt.axhline(0.02, color='k', linestyle='dashed', linewidth=1,label='Random Chance')
+	plt.legend()
+	plt.show()
+	input("Press Enter to continue...")
+
+def to_percent(y, position):
+    # Ignore the passed in position. This has the effect of scaling the default
+    # tick locations.
+    s = str(int(100 * y))
+
+    # The percent symbol needs escaping in latex
+    if matplotlib.rcParams['text.usetex'] is True:
+        return s + r'$\%$'
+    else:
+        return s + '%'

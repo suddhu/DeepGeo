@@ -9,8 +9,10 @@ pickle_file = "single_image_test_files.pickle"
 state_center_file = "../sampler/state_center.npy"
 test_image_path = "/home/suddhu/Pictures/deepgeo/test_data"
 
+show_image_and_map_plot = 0
 # the pickle file has the test labels (we need) and the test file names (dont need). Label names has which state each label pertains to. 
 # so we should be comparing the max(output label) with the test label for the corresponding image number. We can do a top 2/3 metric as well. 
+
 
 def main():
 	# output probabilities (10k * 50)
@@ -32,21 +34,22 @@ def main():
 	#NOTE: per state accuracy seems to be bust as well (no explainable trends?)
 	# NOTE: distance seems to be a pointless metric
 	acc_1,acc_per_state_1,dist_1 = test_metrics.get_accuracy(test_labels,output, state_centers,1)
-	# acc_2,acc_per_state_2,dist_2 = test_metrics.get_accuracy(test_labels,output,state_centers,2)
-	# acc_3,acc_per_state_3,dist_3 = test_metrics.get_accuracy(test_labels,output,state_centers,3)
-	# acc_5,acc_per_state_5,dist_5 = test_metrics.get_accuracy(test_labels,output,state_centers,5)
-	for i in range(0,50):
-		print( str(label_names[i]) + ": " + str(acc_per_state_1[i]))
-	test_metrics.show_image_and_map(test_labels,label_names,test_images,output,test_image_path)
+	acc_2,acc_per_state_2,dist_2 = test_metrics.get_accuracy(test_labels,output,state_centers,2)
+	acc_3,acc_per_state_3,dist_3 = test_metrics.get_accuracy(test_labels,output,state_centers,3)
+	acc_5,acc_per_state_5,dist_5 = test_metrics.get_accuracy(test_labels,output,state_centers,5)
+	
+	if show_image_and_map_plot:
+		test_metrics.show_image_and_map(test_labels,label_names,test_images,output,test_image_path)
 
 	#print(acc_1,acc_2,acc_3,acc_5)
 	#print(dist_1,dist_2,dist_3,dist_5)
+	for i in range(0,50):
+		print( str(label_names[i]) + ": " + str(acc_per_state_5[i]))
 
-
-
+	acc_array = [acc_1,acc_2,acc_3,acc_5]
+	test_metrics.plot_graphs(acc_array)
 
     # get_distinctness_score()
-	pdb.set_trace()
 
 if __name__ == '__main__':
     main()
