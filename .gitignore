@@ -4,4 +4,6 @@
 !*.md
 !*/
 !*.jpg
+!*.png
 !state_center.npy
+!*.pdf
