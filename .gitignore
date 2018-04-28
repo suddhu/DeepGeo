@@ -4,3 +4,4 @@
 !*.md
 !*/
 !*.jpg
+!state_center.npy

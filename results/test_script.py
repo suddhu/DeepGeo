@@ -9,7 +9,7 @@ pickle_file = "single_image_test_files.pickle"
 state_center_file = "../sampler/state_center.npy"
 test_image_path = "/home/suddhu/Pictures/deepgeo/test_data"
 
-show_image_and_map_plot = 0
+show_image_and_map_plot = 1
 # the pickle file has the test labels (we need) and the test file names (dont need). Label names has which state each label pertains to. 
 # so we should be comparing the max(output label) with the test label for the corresponding image number. We can do a top 2/3 metric as well. 
 
