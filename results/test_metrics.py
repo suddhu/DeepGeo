@@ -80,14 +80,17 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 			plt.hold(True)
 
 			# plot for states
+
+			# ground truth 
 			idx = labels.index(label_names[test_labels[i]])
+			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=5.0)
+
 			idx1 = labels.index(label_names[int(output_labels[i,0])])
 			idx2 = labels.index(label_names[int(output_labels[i,1])])
 			idx3 = labels.index(label_names[int(output_labels[i,2])])
 			idx4 = labels.index(label_names[int(output_labels[i,3])])
 			idx5 = labels.index(label_names[int(output_labels[i,4])])
 
-			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=5.0)
 			plt.fill(borders[idx1][:,0], borders[idx1][:,1], color='#66ff33')
 			plt.fill(borders[idx2][:,0], borders[idx2][:,1], color='#ffff00')
 			plt.fill(borders[idx3][:,0], borders[idx3][:,1], color='#ff9900')
@@ -102,6 +105,65 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 			    for label, color in zip(LABELS, colors)]
 			plt.legend(patches, LABELS, loc=1, frameon=False)
 
+		plt.show(0)
+		input("Press Enter to continue...")
+		plt.hold(False)
+
+
+def show_image_and_map_prob(test_labels,label_names,test_images,output,test_image_path):
+	states_file = '../sampler/states.xml'
+	borders= location_sampler.get_borders(states_file)
+	labels= location_sampler.get_labels(states_file)
+	#location_sampler.plot_map(borders)
+	nLabels = len(borders)
+
+	# 256 value colormap?
+	# cmap = plt.cm.jet
+	cmap = plt.get_cmap('YlOrRd')
+
+	cmaplist = [cmap(i) for i in range(cmap.N)]
+
+	output_vals = np.sort(output,axis =1)[:,:]
+	output_labels = np.argsort(output,axis =1)[:,:]
+	# pdb.set_trace()
+	acc = 0
+
+	for i in range(0,output_labels.shape[0]):
+		# plot the image first 
+		im_path = test_image_path + '/' + label_names[test_labels[i]] + '/' + test_images[i].rsplit('/', 1)[-1]
+		print(im_path)
+		img = mpimg.imread(im_path)
+		plt.figure(0)
+		imgplot = plt.imshow(img)
+		# plt.show()
+
+		plt.figure(1)
+		# generate border map of USA
+		for k in range(0,nLabels):
+			plt.plot(borders[k][:,0], borders[k][:,1], 'r-')
+			plt.hold(True)
+			# plot for states
+
+			# ground truth 
+			idx = labels.index(label_names[test_labels[i]])
+			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=5.0)
+
+			for l in range(0,nLabels):
+			# shade each based on probability
+				idx_shade = labels.index(label_names[int(output_labels[i,l])])
+				color_to_shade = int(round((output_vals[i,l]/np.max(output_vals[i,:]))*(len(cmaplist) - 1)))
+				#print(color_to_shade)
+				#pdb.set_trace()
+				plt.fill(borders[idx_shade][:,0], borders[idx_shade][:,1], color=cmaplist[color_to_shade])
+
+			# draw legend
+			# colors = ['#66ff33','#ffff00','#ff9900','#cc3300','#4d1300','#00ffff']
+			# LABELS = ['#1 prediction','#2 prediction','#3 prediction','#4 prediction','#5 prediction','Ground Truth']
+			# patches = [
+			#     mpatches.Patch(color=color, label=label)
+			#     for label, color in zip(LABELS, colors)]
+			# plt.legend(patches, LABELS, loc=1, frameon=False)
+		plt.colorbar()
 		plt.show(0)
 		input("Press Enter to continue...")
 		plt.hold(False)

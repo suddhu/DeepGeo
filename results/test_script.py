@@ -4,8 +4,13 @@ import pickle
 import test_metrics
 
 # output.npy has the prob. of each of the states (10K * 50 matrix). We can use this to find the dominant state of each 
-output_file = 'output.npy'
-pickle_file = "single_image_test_files.pickle"
+output_file = 'outputs/output.npy'
+
+pickle_file1 = "outputs/single_image_test_files.pickle"
+pickle_file2 = "outputs/early-int-data.pickle"
+pickle_file3 = "outputs/med-int-data.pickle"
+pickle_file4 = "outputs/late-int-data.pickle"
+
 state_center_file = "../sampler/state_center.npy"
 test_image_path = "/home/suddhu/Pictures/deepgeo/test_data"
 
@@ -19,7 +24,7 @@ def main():
 	output = np.load(output_file)
 
 	# test data - label_names size (50), test_labels size (100013), test_files size (100013)
-	pickle_in = open(pickle_file,"rb")
+	pickle_in = open(pickle_file1,"rb")
 	T = pickle.load(pickle_in)
 
 	state_centers = np.load(state_center_file)
@@ -39,7 +44,8 @@ def main():
 	acc_5,acc_per_state_5,dist_5 = test_metrics.get_accuracy(test_labels,output,state_centers,5)
 	
 	if show_image_and_map_plot:
-		test_metrics.show_image_and_map(test_labels,label_names,test_images,output,test_image_path)
+		#test_metrics.show_image_and_map(test_labels,label_names,test_images,output,test_image_path)
+		test_metrics.show_image_and_map_prob(test_labels,label_names,test_images,output,test_image_path)
 
 	#print(acc_1,acc_2,acc_3,acc_5)
 	#print(dist_1,dist_2,dist_3,dist_5)
