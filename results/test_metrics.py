@@ -110,7 +110,7 @@ def show_image_and_map(test_labels,label_names,test_images,output,test_image_pat
 		plt.hold(False)
 
 
-def show_image_and_map_prob(test_labels,label_names,test_images,output,test_image_path):
+def show_image_and_map_prob(test_labels,label_names,test_images,output,test_image_path,offset):
 	states_file = '../sampler/states.xml'
 	borders= location_sampler.get_borders(states_file)
 	labels= location_sampler.get_labels(states_file)
@@ -128,7 +128,7 @@ def show_image_and_map_prob(test_labels,label_names,test_images,output,test_imag
 	# pdb.set_trace()
 	acc = 0
 
-	for i in range(0,output_labels.shape[0]):
+	for i in range(offset,output_labels.shape[0]):
 		# plot the image first 
 		im_path = test_image_path + '/' + label_names[test_labels[i]] + '/' + test_images[i].rsplit('/', 1)[-1]
 		print(im_path)
@@ -146,7 +146,7 @@ def show_image_and_map_prob(test_labels,label_names,test_images,output,test_imag
 
 			# ground truth 
 			idx = labels.index(label_names[test_labels[i]])
-			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=5.0)
+			plt.plot(borders[idx][:,0], borders[idx][:,1], 'c-',linewidth=3.0)
 
 			for l in range(0,nLabels):
 			# shade each based on probability
@@ -156,24 +156,23 @@ def show_image_and_map_prob(test_labels,label_names,test_images,output,test_imag
 				#pdb.set_trace()
 				plt.fill(borders[idx_shade][:,0], borders[idx_shade][:,1], color=cmaplist[color_to_shade])
 
-			# draw legend
-			# colors = ['#66ff33','#ffff00','#ff9900','#cc3300','#4d1300','#00ffff']
-			# LABELS = ['#1 prediction','#2 prediction','#3 prediction','#4 prediction','#5 prediction','Ground Truth']
-			# patches = [
-			#     mpatches.Patch(color=color, label=label)
-			#     for label, color in zip(LABELS, colors)]
-			# plt.legend(patches, LABELS, loc=1, frameon=False)
-		plt.colorbar()
+			#draw legend
+			colors = ['#00ffff']
+			LABELS = ['Ground Truth']
+			patches = [
+			    mpatches.Patch(color=color, label=label)
+			    for label, color in zip(LABELS, colors)]
+			plt.legend(patches, LABELS, loc=1, frameon=False)
 		plt.show(0)
 		input("Press Enter to continue...")
 		plt.hold(False)
 
-def plot_graphs(acc_array):
+def plot_graphs(acc_array, line_color, line_label):
 	x = [1, 2, 3, 4]
 	my_xticks = ['Top-1','Top-2','Top-3','Top-5']
 	plt.xticks(x, my_xticks)
 
-	plt.plot(x, acc_array, 'r-',label='Single Image')
+	plt.plot(x, acc_array, line_color,label=line_label,linewidth=2)
 	plt.yticks(np.arange(0, 1, 0.1))
 
 	# Create the formatter using the function to_percent. This multiplies all the
@@ -183,13 +182,15 @@ def plot_graphs(acc_array):
 	# Set the formatter
 	plt.gca().yaxis.set_major_formatter(formatter)
 
-	plt.axis([0, 5, 0, 1])
+	plt.axis([0, 5, 0, 0.8])
+	plt.grid(color='k', linestyle=':', axis='y',linewidth=1, alpha=0.5)
 
+	plt.xlabel('Best of top N states', fontsize=18)
+	plt.ylabel('Accuracy on test dataset (%)', fontsize=18)
+	plt.title('Accuracy on 50states_2K test dataset', fontsize=18)
 	plt.hold(True)
-	plt.axhline(0.02, color='k', linestyle='dashed', linewidth=1,label='Random Chance')
-	plt.legend()
-	plt.show()
-	input("Press Enter to continue...")
+
+	#input("Press Enter to continue...")
 
 def to_percent(y, position):
     # Ignore the passed in position. This has the effect of scaling the default
