@@ -21,7 +21,6 @@ def genPointsWeighted(nPoints,xMin,xMax,yMin,yMax,stateDensity):
     y = np.random.uniform(yMin,yMax,(nPoints,1))
     return (x,y)
 
-
 def pointInPolygon(x,y,points):
 	"Determines if pt inside polygon"
 	outPath = mplPath.Path(points)
@@ -62,7 +61,7 @@ def get_labels(states_file):
 
 def load_density(density_file):
     density = genfromtxt(density_file, delimiter=',')
-    print "loaded density file"
+    print("loaded density file")
     return density
 
 

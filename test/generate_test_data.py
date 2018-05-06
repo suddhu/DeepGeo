@@ -8,19 +8,23 @@ import os, os.path
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-import streetview_tools
 
+import re 
 import sys  
 sys.path.append('../sampler')  
+sys.path.append('../scraper_code')  
+import streetview_tools
 import location_sampler
 
 states_file = '../sampler/states.xml'
 density_file = '../sampler/density2.5MinCutoff.txt'
+
 fail_image = cv2.imread('../fail.jpg',1)
 fail_image2 = cv2.imread('../fail2.jpg',1)
 
 
-images_dir = '/home/suddhu/Pictures/deepgeo/images/'	#X1
+images_dir = '/home/suddhu/Pictures/deepgeo/test_data'	#X1
+train_dir =  '/home/suddhu/Pictures/deepgeo/images' #X1
 #images_dir = '/home/suddhu/Documents/courses/10701/project/images/'	#P51
 
 gmaps_API = googlemaps.Client(key='***REMOVED***')
@@ -33,32 +37,15 @@ streetview_API_key = '***REMOVED***' #sudharshan.nitt
 #'***REMOVED***' #monty's wallet 
 # '***REMOVED***' suddhu's wallet 
 
-def reverse_geocode(coord):
-    '''
-    INPUT:  (1) tuple: latitude and longitude coordinates, in degrees
-    OUTPUT: (1) string: full geocoded address
-    '''
-    result = gmaps_API.reverse_geocode(coord)
-    return result[0]['formatted_address']
-
-
-def get_elev(coord):
-    '''
-    INPUT:  (1) tuple: latitude and longitude coordinates, in degrees
-    OUTPUT: (1) float: elevation of the lat/lng point in meters
-    '''
-    elev = gmaps_API.elevation((coord[0], coord[1]))[0]['elevation']
-    return elev
 
 def main():
-    #[x,y,z] = np.shape(state_points)
     # Alaska - 0, Wyoming - 49
     start = int(sys.argv[1])
     finish = int(sys.argv[2])
 
     print "State " + str(start) + " to " + str(finish)
-    #x = 50
-    y = 2500
+
+    y = 500 # 20% of training data per state
     heading = [0,90,180,270]
 
     borders= location_sampler.get_borders(states_file)
@@ -74,13 +61,12 @@ def main():
         plt.plot(borders[i][:,0], borders[i][:,1], 'r-')
     plt.show(0)
     plt.hold(True)
-    # subset = [4,10,26,27,37]
-    # y = [2500, 1337, 2500, 2500,2500]
 
 #    for states in range(1,x):
     for states in range(start,finish): 
 
-        dir = images_dir + str(labels[states]) + '/'
+        dir = images_dir + '/' + str(labels[states]) + '/'
+        check_dir = train_dir + '/' + str(labels[states]) + '/'
         if not os.path.exists(dir):
             os.makedirs(dir)
         f = open( dir + "info.txt","a")
@@ -92,7 +78,7 @@ def main():
         print  str(labels[states]) + " needs " + str(images_needed) + " more images!"
 
         if images_needed < 0:
-            continue    # more than 10K, moving on...
+            continue    # more than 2K, moving on...
 
         for vals in range(0,images_needed):
             panoids = []
@@ -101,7 +87,6 @@ def main():
                 state_points = location_sampler.get_points_in_states(borders,1,density) # long, lat
                 lat = state_points[states][0][1]
                 lng = state_points[states][0][0]
-                # lat=-33.856f93857571269 lng=151.2144895142714
                 panoids = streetview_tools.panoids(lat=lat, lon=lng)
                 sys.stdout.write('.')
 
@@ -135,9 +120,27 @@ def main():
                         f.close()
                         sys.exit()
 
+                    # check for duplicate 
+                    test_filename = str(re.search(r'(.*)/(.*)',filename).group(2))
+
+                    print "Checking for duplicate..."
+                    duplicate_flag = 0
+                    for train_filename in os.listdir(check_dir):
+                        #pdb.set_trace()
+
+                        if train_filename == test_filename:
+                            print "DUPLICATE"
+                            os.remove(filename)
+                            duplicate_flag = 1
+                            break
+
+                    if duplicate_flag == 0: 
+                        f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
+                        print "UNIQUE"
+
                     cv2.imshow('current image',A)
                     cv2.waitKey(1)
-                    f.write("%s \r %f %f \n" % ((filename), (lat), (lng)))
+
                 except cv2.error:
                     print "OpenCV error: moving along..."
         f.close()
