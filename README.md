@@ -23,6 +23,9 @@ python image_scraper start_state end_state
 
 `start_state` and `end_state` can be obtained from `sampler/state_labels.txt`. Scraping data will take significant time. Keep in mind the 25,000 request limit per day. If the limit is crossed, the script will terminate automatically with a message. Each folder in `images` is a state, with an `info.txt` that gives the lat/lng of each image. 
 
+## Training
+
+All the code for training models can be found in the resnet directory. The main file is 'train.py', run 'train.py --help' for a description of how to train and evaluate a model. Code for building the networks is found in 'resnet.py'.
 
 ## Plotting
 
