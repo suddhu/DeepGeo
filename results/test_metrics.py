@@ -187,7 +187,7 @@ def plot_graphs(acc_array, line_color, line_label):
 
 	plt.xlabel('Best of top N states', fontsize=18)
 	plt.ylabel('Accuracy on test dataset (%)', fontsize=18)
-	plt.title('Accuracy on 50states_2K test dataset', fontsize=18)
+	#plt.title('Accuracy on 50states_2K test dataset', fontsize=18)
 	plt.hold(True)
 
 	#input("Press Enter to continue...")
