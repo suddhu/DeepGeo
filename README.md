@@ -1,7 +1,30 @@
 # DeepGeo
 
 Image Geolocation via Deep Neural Network. 10-701 Course Project. 
+Montiel Abello, Nathaniel Chodosh, Sudharshan Suresh
 
+./results - 
+			accuracy metrics: 
+			test_humans - evaluates results for GeoGuessr games
+			test_locations - plots correct/incorrect samples
+			plot_results - plots different architecture results
+			test_top - top-N metrics 
+			test_script - computes accuracy of each network model
+			test_metrics - helper functions 
+./sampler - 
+			location_sampler - samples locations based on population 
+			distance_states - computes distance b/w state centroids
+./scraper code - 
+			image_scraper - main file to run for street view dataset collection
+			streetview_tools - helper functions 
+./resnet - 
+			resnet.py - network 
+			train.py - utilities for evalutating accuracy
+			data.py - utility function for getting all of the training examples in a directory
+./test - 	scripts to generate test dataset 
+
+
+More information - 
 
 ## Setup 
 
