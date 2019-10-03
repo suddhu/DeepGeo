@@ -1,6 +1,6 @@
 # DeepGeo
 
-Image Geolocation via Deep Neural Network. 10-701 Course Project. 
+https://arxiv.org/pdf/1810.03077.pdf Image Geolocation via Deep Neural Network. 10-701 Course Project. 
 
 ## Setup 
 
