@@ -7,3 +7,5 @@
 !*.png
 !state_center.npy
 !*.pdf
+keys.txt
+*.jar

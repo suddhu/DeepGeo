@@ -27,15 +27,15 @@ images_dir = '/home/suddhu/Pictures/deepgeo/test_data'	#X1
 train_dir =  '/home/suddhu/Pictures/deepgeo/images' #X1
 #images_dir = '/home/suddhu/Documents/courses/10701/project/images/'	#P51
 
-gmaps_API = googlemaps.Client(key='***REMOVED***')
-#geocoder_API = '***REMOVED***'
+gmaps_API = googlemaps.Client(key='AIzaSyCg3sOSHPQ1O5hkoni68TaGNToG2dczFsk')
+#geocoder_API = 'AIzaSyCg3sOSHPQ1O5hkoni68TaGNToG2dczFsk'
 
-#streetview_API_key = '***REMOVED***' # deepgeo701@gmail.com resnet701
-#streetview_API_key = '***REMOVED***' # X1 carbon suddhus@gmail.com
-#streetview_API_key = '***REMOVED***' # P51 sudhars1?
-streetview_API_key = '***REMOVED***' #sudharshan.nitt
-#'***REMOVED***' #monty's wallet 
-# '***REMOVED***' suddhu's wallet 
+#streetview_API_key = 'AIzaSyDd08n3l2sbs4uqV5-MfOu6rPnwn2F8dzU' # deepgeo701@gmail.com resnet701
+#streetview_API_key = 'AIzaSyCyTL_qqEJH2MgiySu_3Ap2yFIotoY2n8E' # X1 carbon suddhus@gmail.com
+#streetview_API_key = 'AIzaSyBlY5mxvmuTUcMxsqIXBtqW9LuxqJH0dTg' # P51 sudhars1?
+streetview_API_key = 'AIzaSyAdFDpyxO3WBXy-VIKZrPJBageWKcA5Xxg' #sudharshan.nitt
+#'AIzaSyB3TTNyvzUaGgOhFMSBgd61a5ejDGdfua8' #monty's wallet 
+# 'AIzaSyBlY5mxvmuTUcMxsqIXBtqW9LuxqJH0dTg' suddhu's wallet 
 
 
 def main():
